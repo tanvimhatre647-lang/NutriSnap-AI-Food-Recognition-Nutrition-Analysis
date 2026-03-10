@@ -1,100 +1,277 @@
-# NutriSnap Frontend Website
+# NutriSnap – AI Food Recognition & Nutrition Analysis 🍏
 
-🌟 **Live Demo:** [https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)
+NutriSnap is a web-based nutrition assistant that allows users to identify food using AI-powered image recognition and instantly view its nutritional breakdown. The platform also provides health tools such as BMI calculation, RDA recommendations, and personalized diet plans.
 
-A comprehensive 6-page nutrition analysis website built with HTML, CSS, and JavaScript.
+---
 
-## Pages Overview
+# Pages Overview
 
-1. **Home Page** (`index.html`) - Hero section with features and benefits
-2. **Food Identification** (`food-identification.html`) - Image upload and analysis interface
-3. **Nutrition Info** (`nutrition-info.html`) - Detailed nutritional breakdown with charts
-4. **BMI Calculator** (`bmi-calculator.html`) - Interactive BMI calculator with visual gauge
-5. **RDA Calculator** (`rda-calculator.html`) - Personalized nutrition recommendations
-6. **Diet Plans** (`diet-plans.html`) - Custom meal plan generator
+## 1. Home Page (index.html)
+Landing page introducing the platform.
 
-## Features
+Features:
+- Hero section explaining NutriSnap
+- Overview of features and benefits
+- Navigation to all health tools
+- Modern health-focused UI design
 
-✅ **Professional Design**
-- Health-oriented color scheme (greens, blues, whites)
-- Modern typography and spacing
-- Smooth animations and hover effects
+---
 
-✅ **Interactive Components**
+## 2. Food Identification (food-identification.html)
+Main AI analysis page where users upload food images.
+
+Features:
+- Drag-and-drop image upload
+- File upload from device
+- Mobile camera integration
+- AI food recognition using Spoonacular API
+- Smart filename detection (fallback logic)
+- Loading animations during analysis
+- Food analysis stored in local storage
+- Redirect to nutrition analysis page
+
+---
+
+## 3. Nutrition Info (nutrition-info.html)
+Displays detailed nutritional information about the detected food.
+
+Features:
+- Detected food name and confidence score
+- Macronutrient analysis
+  - Calories
+  - Protein
+  - Carbohydrates
+  - Fat
+  - Fiber
+  - Sodium
+- Micronutrient analysis
+  - Vitamins
+  - Minerals
+- Nutrition progress bars
+- Clean card-based layout
+- Summary per serving
+- Responsive visualization
+
+---
+
+## 4. BMI Calculator (bmi-calculator.html)
+Interactive Body Mass Index calculator.
+
+Features:
+- Height and weight input
+- Unit toggle (metric/imperial)
+- Instant BMI calculation
+- BMI category display
+- Visual BMI gauge indicator
+- Health advice based on BMI
+
+---
+
+## 5. RDA Calculator (rda-calculator.html)
+Provides personalized Recommended Dietary Allowance.
+
+Features:
+- Age input
+- Gender selection
+- Activity level selection
+- Personalized daily nutrition recommendations
+- Estimated daily calorie needs
+- Recommended macro intake
+
+---
+
+## 6. Diet Plans (diet-plans.html)
+Generates sample diet plans based on user goals.
+
+Features:
+- Goal selection
+  - Weight loss
+  - Muscle gain
+  - Balanced diet
+- Daily meal plan suggestions
+- Breakfast, lunch, dinner suggestions
+- Nutrition-balanced recommendations
+
+---
+
+# Key Features
+
+## AI Food Recognition
+- Image-based food identification
+- Integration with Spoonacular API
+- Automatic nutrition estimation
+- Smart fallback detection using filename logic
+
+---
+
+## Professional UI/UX Design
+
+- Health-oriented color palette (greens, blues, whites)
+- Clean modern typography
+- Smooth animations
+- Hover effects
+- Card-based layout
+
+---
+
+## Interactive Components
+
 - Drag-and-drop file upload
-- Camera integration for mobile
-- BMI calculator with unit toggles
-- Nutrition progress bars and charts
-- Diet plan generator with preferences
+- Mobile camera support
+- Nutrition progress bars
+- Dynamic health calculations
+- Diet plan generator
+- Real-time notifications
 
-✅ **Responsive Design**
-- Mobile-first approach
-- Adaptive navigation
-- Flexible grid layouts
-- Touch-friendly interactions
+---
 
-✅ **User Experience**
-- Sample food images for testing
-- Loading states and notifications
+## Responsive Design
+
+- Mobile-first design
+- Responsive navigation menu
+- Flexible grid layout
+- Touch-friendly UI
+- Works on desktop, tablet, and mobile devices
+
+---
+
+## User Experience Enhancements
+
+- Loading indicators during AI analysis
+- Notifications for actions
+- Smooth scrolling
 - Form validation
-- Smooth scrolling navigation
-- Local storage for data persistence
+- Local storage for saving analysis data
+- Sample food images for testing
 
-## Usage
+---
 
-### 🌐 Online (Recommended)
-Visit the live website: **[https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)**
+# Usage
 
-### 💻 Local Development
-1. **Clone the repository**: `git clone https://github.com/Krushna968/Nutrisnap_UI-UX.git`
-2. **Open locally**: Double-click `index.html` to open in your browser
-3. **Upload food photos**: Use the "Identify Food" page to analyze meals
-4. **View nutrition data**: See detailed breakdowns with macros and micros
-5. **Calculate BMI**: Enter height/weight for BMI analysis
-6. **Get RDA**: Personalized daily nutrition recommendations
-7. **Create diet plans**: Generate meal plans based on goals and preferences
+## Online Version (Recommended)
 
-## Technical Details
+Visit the live website:
 
-- **HTML5** semantic structure
-- **CSS3** with custom properties and flexbox/grid
-- **Vanilla JavaScript** with modular utilities
-- **Local Storage** for data persistence
-- **Responsive** design with mobile support
-- **Accessibility** considerations
 
-## File Structure
+---
+
+## Local Development
+
+### Clone the repository
+
+```
+
+```
+
+### Open the project
+
+Simply open:
+
+```
+index.html
+```
+
+in your browser.
+
+---
+
+# How to Use the Application
+
+### Upload food photos
+Use the **Identify Food** page to upload or capture food images.
+
+### View nutrition data
+The system analyzes the image and shows a **nutrition breakdown**.
+
+### Calculate BMI
+Enter height and weight to determine BMI and health category.
+
+### Get RDA
+View personalized daily nutrition recommendations.
+
+### Generate diet plans
+Create meal plans based on fitness goals.
+
+---
+
+# Technical Details
+
+- HTML5 semantic structure
+- CSS3 with custom properties
+- Flexbox and Grid layouts
+- Vanilla JavaScript
+- Modular utilities (utils.js)
+- Local Storage for data persistence
+- REST API integration
+- Responsive design principles
+- Accessibility considerations
+
+---
+
+# Tools & Technologies Used
+
+## Frontend
+- HTML5 – Page structure and semantic layout
+- CSS3 – Styling, animations, responsive design
+- JavaScript (Vanilla JS) – Interactivity and application logic
+
+## Web Technologies
+- Flexbox & CSS Grid – Responsive layouts
+- Local Storage – Client-side data persistence
+- REST API Integration – Food recognition and nutrition analysis
+
+## API Integration
+- Spoonacular API – AI-powered food recognition and nutrition estimation
+
+## Development Tools
+- Visual Studio Code – Code editor
+- Git – Version control system
+- GitHub – Repository hosting and project management
+
+## Design & UI/UX
+- Modern health-focused UI design principles
+- Mobile-first responsive design
+- Emoji-based icons for cross-platform compatibility
+
+## Deployment
+- GitHub Pages – Hosting the live website
+
+# File Structure
 
 ```
 nutrisnap-website/
-├── index.html (Home)
+
+├── index.html
 ├── food-identification.html
 ├── nutrition-info.html
 ├── bmi-calculator.html
 ├── rda-calculator.html
 ├── diet-plans.html
+
 ├── css/
-│   └── style.css (Main styles)
+│   └── style.css
+
 ├── js/
-│   └── utils.js (JavaScript utilities)
-├── images/ (Placeholder folder)
+│   └── utils.js
+
+├── images/
+
 └── README.md
 ```
 
-## Notes
+---
 
-- The website uses realistic sample data for demonstrations
+# Notes
+
+- Food recognition uses AI services from Spoonacular API
 - Camera functionality requires HTTPS in production
-- All nutrition data is for educational purposes
-- Built following health website design best practices
-- Icons are emoji-based for cross-platform compatibility
+- Nutrition values are educational estimates
+- Designed following health website UI best practices
+- Emoji icons used for cross-platform compatibility
 
-## 🚀 Deployment
+---
 
-- **GitHub Repository**: [https://github.com/Krushna968/Nutrisnap_UI-UX](https://github.com/Krushna968/Nutrisnap_UI-UX)
-- **Live Website**: [https://krushna968.github.io/Nutrisnap_UI-UX/](https://krushna968.github.io/Nutrisnap_UI-UX/)
-- **Deployed via**: GitHub Pages
-- **Logo Integration**: Custom logo.jpg used throughout navigation
-- **Enhanced Animations**: Floating elements, pulse effects, and smooth transitions
+# Author
 
-**Created with ❤️ for healthier living**
+Developed as part of an academic project for learning UI/UX design, web development, and health-based application systems.
+
