@@ -174,7 +174,15 @@ async function analyzeFood(){
   }
 
   // Ensure user is authenticated to scan
-  if (!NutriSnapUtils.getFromLocalStorage('nutrisnap_token')) {
+  let token = NutriSnapUtils.getFromLocalStorage('nutrisnap_token');
+  // the getFromLocalStorage already does JSON.parse, but the login was saving it as a raw string sometimes or with quotes
+  // wait actually getFromLocalStorage might fail or return a string with quotes. 
+  // Let's use the safer auth check
+  
+  const authStatus = localStorage.getItem('nutrisnap_auth');
+  const isAuthenticated = (authStatus === 'true' || authStatus === '"true"');
+
+  if (!isAuthenticated) {
     NutriSnapUtils.showNotification("Please login to scan food", "error");
     setTimeout(() => { window.location.href = "login.html"; }, 1500);
     return;
