@@ -155,9 +155,13 @@
         </div>
     </div>
 
+    <script src="js/utils.js"></script>
     <script>
-        document.getElementById('onboardingForm').addEventListener('submit', (e) => {
+        document.getElementById('onboardingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            NutriSnapUtils.showLoading(submitBtn, 'Analyzing Profile...');
 
             // 1. Gather Data
             const weight = parseFloat(document.getElementById('weight').value);
@@ -168,65 +172,86 @@
             const activity = document.getElementById('activity').value;
 
             // 2. Simple BMR Calculation (Mifflin-St Jeor generic average)
-            // Assumes a general average since gender/age aren't collected for simplicity
             let bmr = (10 * weight) + (6.25 * height) - (5 * 30) + 5; 
 
-            // Activity Multiplier
             let activityMultiplier = 1.2;
             if (activity === 'light') activityMultiplier = 1.375;
             if (activity === 'moderate') activityMultiplier = 1.55;
             if (activity === 'active') activityMultiplier = 1.725;
 
-            let tdee = bmr * activityMultiplier; // Total Daily Energy Expenditure
+            let tdee = bmr * activityMultiplier; 
 
             // 3. Adjust based on Goal
             let targetIntake = tdee;
-            let targetBurn = 300; // Baseline active burn recommendation
+            let targetBurn = 300; 
 
             if (goal === 'weight-loss') {
-                targetIntake = tdee - 500; // 500 cal deficit
+                targetIntake = tdee - 500; 
                 targetBurn = 450;
             } else if (goal === 'weight-gain') {
-                targetIntake = tdee + 500; // 500 cal surplus
+                targetIntake = tdee + 500; 
                 targetBurn = 250; 
             } else if (goal === 'pcod' || goal === 'diabetes' || goal === 'cholesterol') {
-                targetIntake = tdee - 200; // Slight deficit for health management
+                targetIntake = tdee - 200; 
                 targetBurn = 400;
             } else {
-                targetIntake = tdee; // Maintenance
+                targetIntake = tdee; 
                 targetBurn = 350;
             }
 
-            // Ensure sensible minimums
             if (targetIntake < 1200) targetIntake = 1200;
 
             targetIntake = Math.round(targetIntake);
             targetBurn = Math.round(targetBurn);
 
-            // 4. Save to LocalStorage
-            const profile = {
-                weight, height, goal, targetIntake, targetBurn,
-                startDate: new Date().toISOString()
+            // 4. Send Data to Backend Profile Sync
+            const profileData = {
+                weight, 
+                height, 
+                goal, 
+                activityLevel: activity === 'light' ? 'lightly-active' : (activity === 'active' ? 'very-active' : 'sedentary')
             };
-            localStorage.setItem('nutrisnap_profile', JSON.stringify(profile));
-            localStorage.setItem('nutrisnap_onboarding_completed', 'true');
-            
-            // Initialize Journey Data if not exists
-            if (!localStorage.getItem('nutrisnap_journey')) {
-                localStorage.setItem('nutrisnap_journey', JSON.stringify([]));
+
+            try {
+                // Sync with DB
+                await NutriSnapUtils.apiFetch('/auth/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profileData)
+                });
+                
+                NutriSnapUtils.hideLoading(submitBtn);
+
+                // LocalStorage purely for fast frontend referencing
+                const cachedProfile = {
+                    ...profileData, 
+                    targetIntake, 
+                    targetBurn,
+                    startDate: new Date().toISOString()
+                };
+                NutriSnapUtils.saveToLocalStorage('nutrisnap_profile', cachedProfile);
+                NutriSnapUtils.saveToLocalStorage('nutrisnap_onboarding_completed', 'true');
+                
+                if (!localStorage.getItem('nutrisnap_journey')) {
+                    NutriSnapUtils.saveToLocalStorage('nutrisnap_journey', []);
+                }
+
+                // 5. Update UI
+                document.getElementById('display-goal').textContent = goalText;
+                document.getElementById('display-intake').textContent = targetIntake;
+                document.getElementById('display-burn').textContent = targetBurn;
+
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('result-section').style.display = 'block';
+
+                const dots = document.querySelectorAll('.step-dot');
+                dots[0].classList.remove('active');
+                dots[1].classList.add('active');
+
+            } catch(error) {
+                NutriSnapUtils.hideLoading(submitBtn);
+                NutriSnapUtils.showNotification(error.message, 'error');
             }
-
-            // 5. Update UI
-            document.getElementById('display-goal').textContent = goalText;
-            document.getElementById('display-intake').textContent = targetIntake;
-            document.getElementById('display-burn').textContent = targetBurn;
-
-            document.getElementById('form-section').style.display = 'none';
-            document.getElementById('result-section').style.display = 'block';
-
-            const dots = document.querySelectorAll('.step-dot');
-            dots[0].classList.remove('active');
-            dots[1].classList.add('active');
         });
 
         document.getElementById('startJourneyBtn').addEventListener('click', () => {

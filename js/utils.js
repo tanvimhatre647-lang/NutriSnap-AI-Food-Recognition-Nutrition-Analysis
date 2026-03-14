@@ -43,7 +43,10 @@ function setActiveNavLink() {
 
 function updateDashboardNavVisibility() {
     const dashboardLinks = document.querySelectorAll('.dashboard-nav-link');
-    const isAuthenticated = localStorage.getItem('nutrisnap_auth') === 'true';
+    const authStatus = localStorage.getItem('nutrisnap_auth');
+    
+    // Support natively set 'true' or JSON stringified '"true"'
+    const isAuthenticated = (authStatus === 'true' || authStatus === '"true"');
     
     dashboardLinks.forEach(link => {
         if (isAuthenticated) {
@@ -392,6 +395,53 @@ function getFromLocalStorage(key) {
     }
 }
 
+// API Integration Utilities
+const API_BASE_URL = 'http://localhost:5000/api';
+
+async function apiFetch(endpoint, options = {}) {
+    // Inject Authorization header if a token exists
+    let token = localStorage.getItem('nutrisnap_token');
+    
+    // Strip JSON quotes if they accidentally carried over from previous bug
+    if (token && token.startsWith('"') && token.endsWith('"')) {
+        token = token.slice(1, -1);
+    }
+    
+    const headers = {
+        ...options.headers
+    };
+    
+    // Add token if it exists
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Default config
+    const config = {
+        ...options,
+        headers
+    };
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        
+        // Handle no content
+        if (response.status === 204) return null;
+        
+        const data = await response.json();
+        
+        // Handle API errors
+        if (!response.ok) {
+            throw new Error(data.message || 'Something went wrong');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error(`API Error on ${endpoint}:`, error);
+        throw error;
+    }
+}
+
 // Initialize common functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeNavigation();
@@ -414,5 +464,7 @@ window.NutriSnapUtils = {
     getBMICategory,
     calculateRDA,
     saveToLocalStorage,
-    getFromLocalStorage
+    getFromLocalStorage,
+    apiFetch,
+    API_BASE_URL
 };

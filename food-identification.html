@@ -116,10 +116,7 @@ JPEG PNG WEBP • Max 5MB
 let selectedFile = null
 let cameraStream = null
 
-const API_KEY = "eb1cc18b42ec412ca804de14de647c81"
-
 function detectFoodFromName(filename){
-
 filename = filename.toLowerCase();
 
 if(filename.includes("dhokla")) return "Dhokla";
@@ -133,7 +130,6 @@ if(filename.includes("idli")) return "Idli";
 if(filename.includes("dosa")) return "Dosa";
 
 return null;
-
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -172,116 +168,62 @@ video.play()
 }
 
 async function analyzeFood(){
-
-if(!selectedFile){
-
-NutriSnapUtils.showNotification("Upload image first","warning");
-return;
-
-}
-
-if(selectedFile.type === "sample"){
-    const analysisData = generateAnalysisData(selectedFile);
-    NutriSnapUtils.saveToLocalStorage('currentAnalysis', analysisData);
-    window.location.href = "nutrition-info.html";
+  if(!selectedFile){
+    NutriSnapUtils.showNotification("Upload image first","warning");
     return;
-}
+  }
 
-const btn = document.getElementById("analyzeBtn")
+  // Ensure user is authenticated to scan
+  if (!NutriSnapUtils.getFromLocalStorage('nutrisnap_token')) {
+    NutriSnapUtils.showNotification("Please login to scan food", "error");
+    setTimeout(() => { window.location.href = "login.html"; }, 1500);
+    return;
+  }
 
-NutriSnapUtils.showLoading(btn,"AI scanning...")
+  if(selectedFile.type === "sample"){
+      const analysisData = generateAnalysisData(selectedFile);
+      NutriSnapUtils.saveToLocalStorage('currentAnalysis', analysisData);
+      window.location.href = "nutrition-info.html";
+      return;
+  }
 
-try{
+  const btn = document.getElementById("analyzeBtn");
+  NutriSnapUtils.showLoading(btn,"AI scanning via backend...");
 
-const formData = new FormData()
-formData.append("file",selectedFile)
+  try{
+    const formData = new FormData();
+    formData.append("file", selectedFile);
 
-const res = await fetch(`https://api.spoonacular.com/food/images/analyze?apiKey=${API_KEY}`,{
+    // Call our own backend API instead of Spoonacular directly
+    const data = await NutriSnapUtils.apiFetch('/food/analyze', {
+      method: "POST",
+      // Do NOT set Content-Type header manually when sending FormData,
+      // fetch will automatically set it to multipart/form-data with the correct boundary
+      body: formData
+    });
 
-method:"POST",
-body:formData
+    console.log("Backend Analysis Response:", data);
 
-})
+    const analysisData = {
+      foodName: data.foodName,
+      confidence: data.confidence,
+      image: "🍽️",
+      nutrition: data.nutrition
+    };
 
-const data = await res.json()
+    NutriSnapUtils.saveToLocalStorage("currentAnalysis", analysisData);
+    NutriSnapUtils.hideLoading(btn);
+    NutriSnapUtils.showNotification(`AI detected ${data.foodName}`,"success");
 
-console.log(data)
+    setTimeout(()=>{
+      window.location.href="nutrition-info.html";
+    },1200);
 
-let foodName = data.category?.name || "Food";
-
-// fallback detection using filename
-const fallbackFood = detectFoodFromName(selectedFile.name);
-
-if(fallbackFood){
-foodName = fallbackFood;
-}
-
-const nutritionRes = await fetch(
-`https://api.spoonacular.com/recipes/guessNutrition?title=${foodName}&apiKey=${API_KEY}`
-)
-
-const nutritionData = await nutritionRes.json()
-
-const analysisData = {
-
-foodName: foodName,
-
-confidence: Math.round((data.category?.probability || 0.8) * 100),
-
-image: "🍽️",
-
-nutrition:{
-
-calories: Math.round(nutritionData.calories?.value || 200),
-protein: Math.round(nutritionData.protein?.value || 10),
-carbs: Math.round(nutritionData.carbs?.value || 30),
-fat: Math.round(nutritionData.fat?.value || 10),
-
-fiber: 5,
-sugar: Math.round((nutritionData.carbs?.value || 30) * 0.2),
-sodium: 300,
-
- vitamins:{
-  "Vitamin A": 12,
-  "Vitamin C": 8,
-  "Vitamin B6": 6
- },
-
- minerals:{
-  "Calcium": 150,
-  "Iron": 8,
-  "Magnesium": 40,
-  "Potassium": 300
-
-}
-}
-};
-
-
-NutriSnapUtils.saveToLocalStorage("currentAnalysis",analysisData)
-
-NutriSnapUtils.hideLoading(btn)
-
-NutriSnapUtils.showNotification(`AI detected ${foodName}`,"success")
-
-setTimeout(()=>{
-
-window.location.href="nutrition-info.html"
-
-},1200)
-
-}
-
-catch(error){
-
-console.error(error)
-
-NutriSnapUtils.hideLoading(btn)
-
-NutriSnapUtils.showNotification("AI analysis failed","error")
-
-}
-
+  } catch(error){
+    console.error(error);
+    NutriSnapUtils.hideLoading(btn);
+    NutriSnapUtils.showNotification(error.message || "AI analysis failed", "error");
+  }
 }
 
 function capturePhoto(){
